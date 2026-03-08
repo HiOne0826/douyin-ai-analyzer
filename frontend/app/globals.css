@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 255, 255, 255;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 255, 255, 255;
+    --background-end-rgb: 255, 255, 255;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+/* 新野兽派风格组件 */
+.brutalist-button {
+  @apply bg-black text-white font-bold py-3 px-6 border-4 border-black transition-all duration-200 hover:bg-white hover:text-black active:translate-y-1;
+}
+
+.brutalist-input {
+  @apply w-full px-4 py-3 border-4 border-black text-lg focus:outline-none focus:ring-4 focus:ring-black/20;
+}
+
+.brutalist-card {
+  @apply border-4 border-black bg-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)];
+}

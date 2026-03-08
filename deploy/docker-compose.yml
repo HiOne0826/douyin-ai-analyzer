@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: analysis-backend
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./temp_media:/app/temp_media
+      - ./backend/.env:/app/.env
+    environment:
+      - TZ=Asia/Shanghai
+
+  frontend:
+    build: ./frontend
+    container_name: analysis-frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - TZ=Asia/Shanghai
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    container_name: analysis-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./temp_media:/usr/share/nginx/html/temp
+      - ./cert:/etc/nginx/cert
+    depends_on:
+      - backend
+      - frontend
+    environment:
+      - TZ=Asia/Shanghai

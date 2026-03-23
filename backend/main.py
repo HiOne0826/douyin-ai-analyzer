@@ -45,8 +45,6 @@ app.add_middleware(
 TEMP_MEDIA_DIR = os.getenv("TEMP_MEDIA_DIR", "./temp_media")
 MAX_FILE_SIZE_MB = int(os.getenv("MAX_FILE_SIZE_MB", 20))
 RATE_LIMIT = f"{os.getenv('RATE_LIMIT_PER_MINUTE', 5)}/minute"
-VOLC_ACCESS_KEY = os.getenv("VOLC_ACCESS_KEY")
-VOLC_SECRET_KEY = os.getenv("VOLC_SECRET_KEY")
 
 # 创建必要目录
 os.makedirs(TEMP_MEDIA_DIR, exist_ok=True)
@@ -189,8 +187,23 @@ def extract_image_urls(raw_data: Dict[str, Any], max_images: int = 3) -> list:
 
 
 def call_doubao_api(prompt: str, image_base64_list: Optional[list] = None) -> StreamingResponse:
-    """调用豆包API进行分析，支持多图，流式返回结果"""
-    return StreamingResponse(doubao_client.chat_stream(prompt, image_base64_list), media_type="text/event-stream")
+    """调用豆包API进行分析，支持多图，SSE 流式返回结果"""
+    def sse_generator():
+        for chunk in doubao_client.chat_stream(prompt, image_base64_list):
+            # 按 SSE 协议格式包装每个 chunk
+            yield f"data: {chunk}\n\n"
+        # 发送结束标记
+        yield "data: [DONE]\n\n"
+
+    return StreamingResponse(
+        sse_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        }
+    )
 
 # 新增请求模型
 class FetchRequest(BaseModel):
@@ -202,6 +215,7 @@ class AnalyzeRequest(BaseModel):
     user_uuid: Optional[str] = None
     prompt: Optional[str] = None
     task_type: str = "single_content"
+    selected_image_indexes: Optional[list[int]] = None
 
 # API接口
 @app.get("/")
@@ -240,9 +254,25 @@ async def analyze_content(request: Request, analyze_request: AnalyzeRequest):
 
     try:
         raw_data = analyze_request.raw_data
+        selected_indexes = analyze_request.selected_image_indexes or []
 
-        # 下载前3张图片
-        image_urls = extract_image_urls(raw_data, max_images=3)
+        # 图片为可选项，没有图片也可以进行纯文本分析
+
+        # 最多处理3张图片
+        selected_indexes = selected_indexes[:3]
+
+        # 提取所有图片URL
+        all_image_urls = extract_image_urls(raw_data, max_images=999)
+
+        # 只下载选中的图片
+        image_urls = []
+        for idx in selected_indexes:
+            if 0 <= idx < len(all_image_urls):
+                image_urls.append(all_image_urls[idx])
+
+        # image_urls 可能为空（纯文本内容），不阻断分析流程
+
+        # 下载并处理图片
         image_base64_list = []
         for img_url in image_urls:
             b64 = download_media(img_url, task_id)
@@ -334,8 +364,8 @@ async def get_sitemap():
     conn = sqlite3.connect('./data/analysis_records.db')
     c = conn.cursor()
     c.execute('''
-        SELECT slug, updated_at 
-        FROM analysis_records 
+        SELECT slug, created_at
+        FROM analysis_records
         WHERE is_public = 1
     ''')
     records = c.fetchall()

@@ -2,40 +2,184 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 255, 255, 255;
-  --background-end-rgb: 255, 255, 255;
+/* 全局样式 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 0, 0, 0;
-    --background-start-rgb: 255, 255, 255;
-    --background-end-rgb: 255, 255, 255;
-  }
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-  font-family: Helvetica, Arial, sans-serif;
+/* 新野兽主义基础类 */
+/* 按钮 */
+.btn-neo {
+  @apply font-mono font-bold inline-block text-center transition-all duration-100 px-6 py-3 bg-white text-dark border-3 border-dark;
 }
 
-/* 新野兽派风格组件 */
-.brutalist-button {
-  @apply bg-black text-white font-bold py-3 px-6 border-4 border-black transition-all duration-200 hover:bg-white hover:text-black active:translate-y-1;
+.btn-neo:hover {
+  @apply -translate-x-[2px] -translate-y-[2px] shadow-neo;
 }
 
-.brutalist-input {
-  @apply w-full px-4 py-3 border-4 border-black text-lg focus:outline-none focus:ring-4 focus:ring-black/20;
+.btn-neo:active {
+  @apply translate-x-[2px] translate-y-[2px] shadow-neo-active;
 }
 
-.brutalist-card {
-  @apply border-4 border-black bg-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)];
+.btn-neo-primary {
+  @apply bg-blue-600 text-white;
+}
+
+.btn-neo-primary:hover {
+  @apply bg-blue-700;
+}
+
+/* 卡片 */
+.card-neo {
+  @apply border-3 border-dark shadow-neo-sm bg-gray-50 p-6;
+}
+
+/* 输入框 */
+.input-neo {
+  @apply w-full border-3 border-dark p-4 font-mono bg-white focus:outline-none focus:ring-4 focus:ring-blue-600/20;
+}
+
+/* 标签 */
+.tag-neo {
+  @apply font-mono text-xs font-bold px-3 py-1 border-2 border-dark bg-blue-600 text-white;
+}
+
+/* 列表 */
+.list-neo li {
+  @apply flex items-start mb-2;
+}
+
+.list-neo li::before {
+  content: "▸";
+  @apply font-mono text-lg mr-3 text-blue-600 font-bold flex-shrink-0;
+}
+
+/* 标签页按钮 */
+.tab-btn {
+  @apply border-2 border-dark bg-white text-dark px-4 py-2 font-mono font-bold cursor-pointer transition-all duration-100;
+}
+
+.tab-btn.active {
+  @apply bg-blue-600 text-white;
+}
+
+/* 边框工具类 */
+.border-b-3 {
+  border-bottom-width: 3px;
+}
+
+.border-t-3 {
+  border-top-width: 3px;
+}
+
+.border-l-3 {
+  border-left-width: 3px;
+}
+
+.border-r-3 {
+  border-right-width: 3px;
+}
+
+/* 背景网格 */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Markdown 内容样式 */
+.prose {
+  color: #1a1a1a;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.prose :where(code):not(:where([class~="not-prose"] *)) {
+  color: #1a1a1a;
+  font-weight: 600;
+  background-color: #f3f4f6;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.125rem;
+  border: 1px solid #1a1a1a;
+}
+
+.prose :where(pre):not(:where([class~="not-prose"] *)) {
+  background-color: #1a1a1a;
+  color: white;
+  border: 3px solid #1a1a1a;
+  box-shadow: 4px 4px 0px #1a1a1a;
+}
+
+.prose :where(blockquote):not(:where([class~="not-prose"] *)) {
+  border-left: 4px solid #2563eb;
+  background-color: #eff6ff;
+  padding: 1rem;
+  border: 2px solid #1a1a1a;
+  font-style: normal;
+}
+
+.prose :where(table):not(:where([class~="not-prose"] *)) {
+  border-collapse: collapse;
+  width: 100%;
+  border: 3px solid #1a1a1a;
+}
+
+.prose :where(th):not(:where([class~="not-prose"] *)) {
+  background-color: #2563eb;
+  color: white;
+  font-weight: bold;
+  border: 2px solid #1a1a1a;
+  padding: 0.5rem;
+}
+
+.prose :where(td):not(:where([class~="not-prose"] *)) {
+  border: 2px solid #1a1a1a;
+  padding: 0.5rem;
+}
+
+.prose :where(hr):not(:where([class~="not-prose"] *)) {
+  border-top: 3px solid #1a1a1a;
+  margin: 2rem 0;
+}
+
+.prose :where(h1, h2, h3, h4, h5, h6):not(:where([class~="not-prose"] *)) {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+/* 强制列表标记显示 */
+.prose ul {
+  list-style-type: disc !important;
+  padding-left: 2rem !important;
+}
+
+.prose ol {
+  list-style-type: decimal !important;
+  padding-left: 2rem !important;
+}
+
+.prose ul li, .prose ol li {
+  display: list-item !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.prose ul li::marker, .prose ol li::marker {
+  font-weight: bold !important;
+  color: #2563eb !important;
+}
+
+/* 强制加粗样式 */
+.prose strong {
+  font-weight: 900 !important;
+  color: #2563eb !important;
 }

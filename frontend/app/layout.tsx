@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'AI社交媒体内容分析系统',
-  description: '智能分析抖音/小红书内容，提供专业的优化建议和对标分析',
+  title: 'AI 内容分析工具 - 抖音/小红书数据化运营助手',
+  description: '输入抖音/小红书链接，AI自动分析8个维度数据，提供专业优化建议，助力内容创作和运营增长',
 }
 
 export default function RootLayout({
@@ -13,24 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-CN">
-      <body className="min-h-screen bg-white">
-        <header className="border-b-4 border-black py-6">
-          <div className="container mx-auto px-4">
-            <h1 className="text-4xl font-bold">
-              <span className="bg-black text-white px-2">AI</span> 内容分析
-            </h1>
-            <p className="mt-2 text-lg">抖音/小红书智能分析工具</p>
-          </div>
-        </header>
-        <main className="container mx-auto px-4 py-12">
-          {children}
-        </main>
-        <footer className="border-t-4 border-black py-8 mt-12">
-          <div className="container mx-auto px-4 text-center">
-            <p>© 2024 AI内容分析系统 | 极简主义·新野兽派</p>
-          </div>
-        </footer>
-      </body>
+      <body>{children}</body>
     </html>
   )
 }
